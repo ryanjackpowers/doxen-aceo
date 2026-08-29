@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doxen Art Company ACEO Prompt Studio</title>
+<style>
+:root{
+  --paper:#f4efe5;
+  --ink:#151515;
+  --muted:#6e675e;
+  --brown:#8c5a30;
+  --line:#cdbb9f;
+  --panel:#fffaf0;
+  --dark:#1e201d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#f7f2e9,#eee5d5);
+}
+.app{max-width:1320px;margin:0 auto;padding:18px}
+.brand{
+  text-align:center;
+  margin:4px 0 16px;
+}
+.brand .name{
+  font-family:Georgia,serif;
+  font-size:34px;
+  font-weight:700;
+  letter-spacing:.04em;
+}
+.brand .sub{
+  margin-top:3px;
+  font-size:13px;
+  letter-spacing:.28em;
+  color:var(--brown);
+  font-weight:800;
+}
+.titleWrap{text-align:center;margin-bottom:18px}
+.titleWrap h1{
+  margin:0;
+  font-size:clamp(24px,5vw,42px);
+  letter-spacing:.05em;
+  white-space:nowrap;
+}
+.titleWrap p{
+  margin:9px auto 0;
+  max-width:760px;
+  color:var(--muted);
+  line-height:1.45;
+}
+.stage{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(360px,.95fr);
+  gap:16px;
+}
+.card{
+  border:1px solid #b9a485;
+  background:rgba(255,250,240,.95);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 8px 22px rgba(54,39,20,.06);
+}
+.cardHeader{
+  background:var(--dark);
+  color:white;
+  padding:11px 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+}
+.step{
+  width:34px;height:34px;border-radius:50%;
+  background:#f6e6c7;color:#1f1f1f;
+  display:grid;place-items:center;
+  border:2px solid #bea071;
+  font-size:18px;
+}
+.cardBody{padding:13px}
+.optionGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.group{
+  border:1px solid #d8c8af;
+  background:#fffaf1;
+  border-radius:8px;
+  padding:10px;
+}
+.groupTitle{font-size:14px;font-weight:900;margin-bottom:8px}
+.options{display:grid;gap:5px}
+.opt{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.22}
+.opt input{accent-color:var(--brown)}
+.customLine{margin-top:9px}
+.micField{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:7px;
+  align-items:center;
+}
+input[type=text],textarea{
+  width:100%;
+  border:1px solid #bda98b;
+  background:#fffdf7;
+  color:#1b1b1b;
+  border-radius:7px;
+  padding:10px 11px;
+  font:inherit;
+}
+textarea{resize:vertical;min-height:390px;line-height:1.45}
+button{
+  border:1px solid #8e7a61;
+  background:#fff8eb;
+  color:#1b1b1b;
+  border-radius:7px;
+  padding:11px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+button.primary{background:linear-gradient(#95653a,#76502f);color:white;border-color:#6f4929}
+button.plainAction{
+  background:#fffaf0;
+  color:#151515;
+  border:1px solid #9d896e;
+}
+button.dark{background:var(--dark);color:white;border-color:#111}
+button.soft{
+  background:#ead1a7;
+  color:#151515;
+  border-color:#a58e6e;
+}
+.micInline{
+  width:40px;
+  height:40px;
+  min-width:40px;
+  padding:0;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:18px;
+}
+.micInline.listening{
+  background:#76502f;
+  color:white;
+  border-color:#5d3c22;
+}
+.mainActions{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  gap:12px;
+  margin-top:14px;
+}
+.mainActionsTop{
+  width:100%;
+}
+.mainActionsTop > button{
+  display:block;
+  width:100%;
+  max-width:100%;
+  min-height:58px;
+  margin:0;
+  padding:11px 16px;
+  border-radius:10px;
+  font-size:21px;
+  font-weight:900;
+  white-space:normal;
+  box-sizing:border-box;
+}
+
+.promptMeta{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:7px;
+}
+.modeNote{
+  margin-top:10px;
+  border:1px solid #d6c5a9;
+  background:#fff7e8;
+  border-radius:8px;
+  padding:10px 12px;
+  color:#554d43;
+  font-size:13px;
+  line-height:1.4;
+}
+.footer{
+  margin-top:16px;
+  background:var(--dark);
+  color:#d8c7ad;
+  text-align:center;
+  padding:14px;
+  border-radius:8px;
+  font-size:13px;
+}
+@media(max-width:1050px){.stage{grid-template-columns:1fr}}
+@media(max-width:760px){
+  .app{padding:10px}
+  .optionGrid{grid-template-columns:1fr}
+  .mainActionsTop{
+    width:100%;
+    overflow:hidden;
+  }
+  .mainActionsTop > button{
+    width:100%;
+    max-width:100%;
+    min-width:0;
+    min-height:58px;
+    font-size:21px;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="brand">
+  <div class="name">DOXEN ART COMPANY</div>
+  <div class="sub">ORIGINAL ART AND ACEO STUDIO</div>
+</div>
+
+<div class="titleWrap">
+  <h1>ACEO PROMPT STUDIO</h1>
+  <p>Select multiple creative elements. The prompt updates automatically. Simplified mode creates an extremely easy traceable design intended for a five to ten minute sketch at the exact 2.5 by 3.5 inch ACEO size in either vertical or horizontal orientation.</p>
+</div>
+
+<div class="stage">
+
+<section class="card">
+<div class="cardHeader"><span class="step">1</span> BUILD YOUR ACEO CONCEPT</div>
+<div class="cardBody">
+<div class="optionGrid" id="optionGrid"></div>
+
+<div class="group" style="margin-top:10px">
+  <div class="groupTitle">ADDITIONAL CREATIVE DIRECTION</div>
+  <div class="micField">
+    <input id="extra" type="text" placeholder="Other ideas, scene details, humor, story, or instructions">
+    <button class="micInline" data-mic-target="extra" title="Speak">🎤</button>
+  </div>
+</div>
+
+<div class="group" style="margin-top:10px">
+  <div class="groupTitle">AVOID</div>
+  <div class="micField">
+    <input id="avoid" type="text" placeholder="Anything you do not want included">
+    <button class="micInline" data-mic-target="avoid" title="Speak">🎤</button>
+  </div>
+</div>
+
+<div class="mainActions mainActionsTop">
+  <button class="plainAction" id="surprise">SURPRISE ME</button>
+  <button class="soft" id="simplify">SIMPLIFIED: OFF</button>
+  <button class="dark" id="copyPrompt">COPY PROMPT</button>
+  <button class="primary" id="openChatGPT">OPEN CHATGPT</button>
+</div>
+
+<div class="modeNote" id="modeNote">
+Standard mode preserves the selected detail level. Simplified mode removes most detail and forces a bold, traceable design with very few lines.
+</div>
+</div>
+</section>
+
+<section class="card">
+<div class="cardHeader"><span class="step">2</span> GENERATED PROMPT</div>
+<div class="cardBody">
+  <textarea id="promptBox" placeholder="Your ACEO prompt will appear here."></textarea>
+  <div class="promptMeta">
+    <span id="modeLabel">Mode: Standard</span>
+    <span id="countLabel">0 characters</span>
+  </div>
+</div>
+</section>
+
+</div>
+
+<div class="footer">DOXEN ART COMPANY ACEO PROMPT STUDIO</div>
+</div>
+
+<script>
+const data = {
+  theme: {
+    title: "THEME",
+    options: [
+      "Abstract / Surreal","Animals / Pets","Fantasy / Mythical","Halloween","Holidays / Seasons",
+      "Motorcycle Culture","Nature / Wildlife","Nautical / Ocean","Sci Fi / Futuristic",
+      "Small Town Americana","Steampunk","Still Life / Objects","Vintage / Retro"
+    ]
+  },
+  orientation: {
+    title: "ORIENTATION",
+    options: [
+      "Horizontal","Vertical"
+    ]
+  },
+  subject: {
+    title: "MAIN SUBJECT",
+    options: [
+      "Architecture","Birds","Cats","Dachshund","Dogs","Flowers / Plants","Horses","Insects / Bugs",
+      "Motorcycles","People / Portraits","Robots / Machines","Skulls / Skeletons","Vintage Vehicles","Wildlife"
+    ]
+  },
+  style: {
+    title: "VISUAL STYLE",
+    options: [
+      "Abstract","Acrylic Painting","Charcoal","Folk Art","Hand Cut Mixed Media Collage","Impressionistic",
+      "Ink Illustration","Oil Painting","Pen and Ink","Pencil Drawing","Watercolor","Woodcut / Linocut"
+    ]
+  },
+  artstyle: {
+    title: "ART STYLE / ERA",
+    options: [
+      "1950s Americana","Art Deco","Art Nouveau","Contemporary","Folk / Primitive","Mid Century Modern",
+      "Modernism","Pop Art","Realism","Retro Illustration","Victorian"
+    ]
+  },
+  mood: {
+    title: "MOOD / FEELING",
+    options: [
+      "Bold / Energetic","Cozy","Deadpan Humor","Dramatic","Eerie","Melancholic","Mysterious",
+      "Nostalgic","Playful","Romantic","Serene","Whimsical"
+    ]
+  },
+  palette: {
+    title: "COLOR PALETTE",
+    options: [
+      "Analogous Colors","Bold / High Contrast","Cool Colors","Earth Tones","Limited Palette",
+      "Monochrome","Muted / Soft / Pastel","Natural Color","Sepia / Antique","Sunset Palette",
+      "Vintage Americana","Warm Colors"
+    ]
+  },
+  composition: {
+    title: "COMPOSITION",
+    options: [
+      "Close Up / Portrait","Environmental Scene","Extreme Close Up","Full Body / Centered",
+      "Low Angle / Upward View","Off Center","Overhead Composition","Simple Centered Subject",
+      "Wide Establishing View"
+    ]
+  },
+  lighting: {
+    title: "LIGHTING",
+    options: [
+      "Backlit / Silhouette","Dramatic / High Contrast","Even / Flat Light","Golden Hour",
+      "Moonlight","Natural Daylight","Neon / Artificial","Overcast Light","Soft Window Light","Studio Lighting"
+    ]
+  },
+  finish: {
+    title: "SURFACE / FINISH",
+    options: [
+      "Aged / Vintage","Distressed / Worn","Glossy","Impasto / Thick Paint","Matte",
+      "Oil and Acrylic Painting Paper","Smooth Paper","Textured Paper","Watercolor Paper"
+    ]
+  },
+  details: {
+    title: "KEY DETAILS",
+    options: [
+      "Humorous Detail","Mechanical Elements","Nature Elements","Rich Textures",
+      "Small Hidden Detail","Storytelling Elements"
+    ]
+  }
+};
+
+const groups = Object.keys(data);
+let simplified = false;
+
+function renderGroups(){
+  const grid = document.getElementById("optionGrid");
+  groups.forEach(name => {
+    const cfg = data[name];
+    const group = document.createElement("div");
+    group.className = "group";
+    const sorted = [...cfg.options].sort((a,b) => a.localeCompare(b));
+    group.innerHTML = `
+      <div class="groupTitle">${cfg.title}</div>
+      <div class="options" data-group="${name}">
+        ${sorted.map(v => `<label class="opt"><input type="checkbox" value="${v.replaceAll('"','&quot;')}">${v}</label>`).join("")}
+      </div>
+      <div class="customLine">
+        <div class="micField">
+          <input type="text" data-custom="${name}" placeholder="Other">
+          <button class="micInline" data-mic-target="custom_${name}" title="Speak">🎤</button>
+        </div>
+      </div>
+    `;
+    grid.appendChild(group);
+    group.querySelector(`[data-custom="${name}"]`).id = `custom_${name}`;
+  });
+}
+
+function valuesFor(name){
+  const checked = [...document.querySelectorAll(`[data-group="${name}"] input[type="checkbox"]:checked`)].map(el => el.value);
+  const custom = document.querySelector(`[data-custom="${name}"]`);
+  if(custom && custom.value.trim()) checked.push(custom.value.trim());
+  return checked;
+}
+
+function line(label, values){
+  return values.length ? `${label}: ${values.join(", ")}.` : "";
+}
+
+function buildPrompt(){
+  const orientationValues = valuesFor("orientation");
+  let dimensionInstruction = "Create the finished artwork as an ACEO card using exactly 2.5 by 3.5 inches. You may choose either vertical or horizontal orientation, but no other dimensions or aspect ratio are allowed.";
+  if(orientationValues.includes("Vertical")){
+    dimensionInstruction = "The finished artwork must be vertical and exactly 2.5 inches wide by 3.5 inches high. Use the exact 5:7 vertical aspect ratio.";
+  } else if(orientationValues.includes("Horizontal")){
+    dimensionInstruction = "The finished artwork must be horizontal and exactly 3.5 inches wide by 2.5 inches high. Use the exact 7:5 horizontal aspect ratio.";
+  }
+
+  const parts = [
+    "Create a finished original ACEO collectible artwork.",
+    dimensionInstruction
+  ];
+
+  const labels = {
+    theme:"Theme elements",
+    orientation:"Orientation",
+    subject:"Main subject elements",
+    style:"Visual style blend",
+    artstyle:"Art style and era influences",
+    mood:"Mood and feeling",
+    palette:"Color palette influences",
+    composition:"Composition elements",
+    lighting:"Lighting influences",
+    finish:"Surface and finish",
+    details:"Key details to include"
+  };
+
+  groups.forEach(name => {
+    const text = line(labels[name], valuesFor(name));
+    if(text) parts.push(text);
+  });
+
+  if(simplified){
+    parts.push(
+      "EXTREMELY SIMPLIFIED DRAWING DIRECTION:",
+      "Reduce the idea specifically for a finished ACEO card measuring exactly 2.5 by 3.5 inches in the selected orientation. The design must be traceable and drawable by a beginner in about 5 to 10 minutes.",
+      "Use one dominant subject only, sized large enough to read clearly on a 2.5 by 3.5 inch ACEO card.",
+      "Build the subject from a few large basic shapes and a very small number of bold contour lines.",
+      "Use the fewest lines possible while keeping the subject recognizable at the tiny 2.5 by 3.5 inch finished size, whether vertical or horizontal.",
+      "No intricate line work. No tiny textures. No complicated anatomy. No detailed machinery. No detailed architecture.",
+      "Avoid crowded scenes, overlapping objects, complex perspective, elaborate backgrounds, decorative patterns, and secondary focal points.",
+      "The background should be blank, nearly blank, or represented by only one or two broad simple shapes.",
+      "Simplify eyes, faces, fur, feathers, clothing, wheels, buildings, foliage, shadows, and accessories into basic shapes.",
+      "Use large open areas that are easy to trace and easy to paint on a 2.5 by 3.5 inch card.",
+      "Use only a few clearly separated values and colors.",
+      "Create crisp, obvious outer edges suitable for tracing.",
+      "The final design must look intentionally simple, not unfinished.",
+      "Prioritize immediate readability at the exact 2.5 by 3.5 inch ACEO size over realism or detail.",
+      "A person viewing the image should be able to trace the major outlines in less than 10 minutes. Keep every important line thick, simple, separated, and clearly visible at the final 2.5 by 3.5 inch ACEO size."
+    );
+  } else {
+    parts.push(
+      "Make the image visually strong at miniature ACEO size. Use a clear focal point, strong silhouette, purposeful lighting, rich detail, and an intentional composition.",
+      "The artwork should feel like a distinctive one of a kind collectible piece rather than generic stock art."
+    );
+  }
+
+  parts.push(
+    "Fill the entire ACEO card with artwork. The final image must always measure exactly 2.5 by 3.5 inches in the selected orientation. Vertical means 2.5 inches wide by 3.5 inches high. Horizontal means 3.5 inches wide by 2.5 inches high. Do not show a frame, mat, mockup, border, tabletop, hand holding the card, gallery wall, watermark, signature, written caption, lettering, or typography."
+  );
+
+  const extra = document.getElementById("extra").value.trim();
+  const avoid = document.getElementById("avoid").value.trim();
+
+  if(extra) parts.push(`Additional creative direction: ${extra}.`);
+  if(avoid) parts.push(`Avoid: ${avoid}.`);
+
+  parts.push("Generate only the finished artwork itself.");
+  parts.push("Please generate the image now.");
+
+  const result = parts.join("\n\n");
+  document.getElementById("promptBox").value = result;
+  document.getElementById("modeLabel").textContent = simplified ? "Mode: Extremely Simplified ACEO" : "Mode: Standard";
+  document.getElementById("countLabel").textContent = `${result.length} characters`;
+  return result;
+}
+
+function clearAll(){
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  document.querySelectorAll('input[type="text"]').forEach(el => el.value = "");
+  simplified = false;
+  const btn = document.getElementById("simplify");
+  btn.textContent = "SIMPLIFIED: OFF";
+  btn.className = "soft";
+  buildPrompt();
+}
+
+function surpriseMe(){
+  clearAll();
+  groups.forEach(name => {
+    const boxes = [...document.querySelectorAll(`[data-group="${name}"] input[type="checkbox"]`)];
+    if(boxes.length){
+      boxes[Math.floor(Math.random() * boxes.length)].checked = true;
+      if(name !== "orientation" && Math.random() < 0.22 && boxes.length > 4){
+        const second = boxes[Math.floor(Math.random() * boxes.length)];
+        second.checked = true;
+      }
+    }
+  });
+  buildPrompt();
+}
+
+async function copyPrompt(){
+  const text = buildPrompt();
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(err){
+    const box = document.getElementById("promptBox");
+    box.focus();
+    box.select();
+    document.execCommand("copy");
+  }
+  return text;
+}
+
+async function openChatGPT(){
+  const text = await copyPrompt();
+
+  // Copy the full prompt first.
+  // Then open ChatGPT and pass the prompt in the URL so supported ChatGPT
+  // experiences can prefill it. The clipboard remains populated as a fallback.
+  const encoded = encodeURIComponent(text);
+  window.open(`https://chatgpt.com/?q=${encoded}`, "_blank", "noopener,noreferrer");
+}
+
+function setupSpeech(){
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  document.querySelectorAll("[data-mic-target]").forEach(button => {
+    if(!SpeechRecognition){
+      button.addEventListener("click", () => alert("Speech recognition is not available in this browser. Chrome on a secure HTTPS page works best."));
+      return;
+    }
+
+    let recognition = null;
+    let listening = false;
+
+    button.addEventListener("click", () => {
+      const target = document.getElementById(button.dataset.micTarget);
+
+      if(listening && recognition){
+        recognition.stop();
+        return;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.continuous = false;
+
+      recognition.onstart = () => {
+        listening = true;
+        button.classList.add("listening");
+      };
+
+      recognition.onend = () => {
+        listening = false;
+        button.classList.remove("listening");
+      };
+
+      recognition.onerror = () => {
+        listening = false;
+        button.classList.remove("listening");
+      };
+
+      recognition.onresult = event => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim();
+        target.value = target.value.trim() ? `${target.value.trim()} ${transcript}` : transcript;
+        buildPrompt();
+      };
+
+      recognition.start();
+    });
+  });
+}
+
+renderGroups();
+setupSpeech();
+
+document.getElementById("surprise").addEventListener("click", surpriseMe);
+document.getElementById("simplify").addEventListener("click", () => {
+  simplified = !simplified;
+  const btn = document.getElementById("simplify");
+  btn.textContent = simplified ? "SIMPLIFIED: ON" : "SIMPLIFIED: OFF";
+  btn.className = simplified ? "primary" : "soft";
+  buildPrompt();
+});
+document.getElementById("copyPrompt").addEventListener("click", copyPrompt);
+document.getElementById("openChatGPT").addEventListener("click", openChatGPT);
+
+document.addEventListener("change", e => {
+  if(e.target.matches('[data-group="orientation"] input[type="checkbox"]') && e.target.checked){
+    document.querySelectorAll('[data-group="orientation"] input[type="checkbox"]').forEach(box => {
+      if(box !== e.target) box.checked = false;
+    });
+  }
+  if(e.target.matches('input[type="checkbox"], input[type="text"]')) buildPrompt();
+});
+document.addEventListener("input", e => {
+  if(e.target.matches('input[type="text"]')) buildPrompt();
+});
+
+buildPrompt();
+</script>
+</body>
+</html>
