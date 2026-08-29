@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doxen Art Company ACEO Prompt Studio</title>
+<style>
+:root{
+  --paper:#f4efe5;
+  --paper2:#ede4d3;
+  --ink:#151515;
+  --muted:#6e675e;
+  --brown:#8c5a30;
+  --brown2:#b77a45;
+  --line:#cdbb9f;
+  --panel:#fffaf0;
+  --dark:#1e201d;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  color:var(--ink);
+  background:linear-gradient(180deg,#f7f2e9,#eee5d5);
+}
+.app{max-width:1320px;margin:0 auto;padding:18px}
+.topbar{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:20px;
+  align-items:center;
+  padding:8px 6px 18px;
+}
+.titleWrap{text-align:left}
+.titleWrap h1{margin:0;font-size:42px;letter-spacing:.06em}
+.titleWrap .tag{margin-top:5px;font-size:15px;letter-spacing:.2em;color:var(--brown);font-weight:800}
+.titleWrap p{margin:10px 0 0;max-width:720px;color:var(--muted);line-height:1.45}
+.topActions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+button{
+  border:1px solid #8e7a61;
+  background:#fff8eb;
+  color:#1b1b1b;
+  border-radius:7px;
+  padding:11px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+button.primary{background:linear-gradient(#95653a,#76502f);color:white;border-color:#6f4929}
+button.dark{background:var(--dark);color:white;border-color:#111}
+button.soft{background:#e7d2ad}
+.stage{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(360px,.95fr);
+  gap:16px;
+}
+.card{
+  border:1px solid #b9a485;
+  background:rgba(255,250,240,.94);
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 8px 22px rgba(54,39,20,.06);
+}
+.cardHeader{
+  background:var(--dark);
+  color:white;
+  padding:11px 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+}
+.step{
+  width:34px;height:34px;border-radius:50%;
+  background:#f6e6c7;color:#1f1f1f;
+  display:grid;place-items:center;
+  border:2px solid #bea071;
+  font-size:18px;
+}
+.cardBody{padding:13px}
+.optionGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.group{
+  border:1px solid #d8c8af;
+  background:#fffaf1;
+  border-radius:8px;
+  padding:10px;
+}
+.groupTitle{font-size:14px;font-weight:900;margin-bottom:8px}
+.options{display:grid;gap:5px}
+.opt{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.22}
+.opt input{accent-color:var(--brown)}
+.customLine{margin-top:8px}
+input[type=text],textarea{
+  width:100%;
+  border:1px solid #bda98b;
+  background:#fffdf7;
+  color:#1b1b1b;
+  border-radius:7px;
+  padding:10px 11px;
+  font:inherit;
+}
+textarea{resize:vertical;min-height:330px;line-height:1.45}
+.mainActions{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.mainActions button{min-height:58px;font-size:15px}
+.modeNote{
+  margin-top:10px;
+  border:1px solid #d6c5a9;
+  background:#fff7e8;
+  border-radius:8px;
+  padding:10px 12px;
+  color:#554d43;
+  font-size:13px;
+  line-height:1.4;
+}
+.promptMeta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:7px}
+.footer{
+  margin-top:16px;background:var(--dark);color:#d8c7ad;
+  text-align:center;padding:14px;border-radius:8px;font-size:13px;
+}
+@media(max-width:1050px){
+  .stage{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+  .app{padding:10px}
+  .topbar{grid-template-columns:1fr}
+  .topActions{justify-content:flex-start}
+  .titleWrap h1{font-size:30px}
+  .optionGrid{grid-template-columns:1fr}
+  .mainActions{grid-template-columns:1fr}
+}
+
+.micField{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:7px;
+  align-items:center;
+}
+.micInline{
+  width:38px;
+  height:38px;
+  min-width:38px;
+  padding:0;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-size:17px;
+  line-height:1;
+  background:#fff8eb;
+  border:1px solid #8e7a61;
+}
+.micInline.listening{
+  background:#76502f;
+  color:white;
+  border-color:#5d3c22;
+}
+.micTools{
+  margin-top:10px;
+  border:1px solid #d6c5a9;
+  background:#fff7e8;
+  border-radius:8px;
+  padding:10px 12px;
+}
+.micToolsRow{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.micTools button{
+  flex:1 1 180px;
+}
+.micStatus{
+  font-size:12px;
+  color:#6e675e;
+  line-height:1.4;
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="topbar">
+  <div class="titleWrap">
+    <h1>ACEO PROMPT STUDIO</h1>
+    <div class="tag">DOXEN ART COMPANY</div>
+    <p>Build a detailed ACEO prompt, or create a simplified version designed for a beginning to moderate painter.</p>
+  </div>
+  <div class="topActions">
+    <button id="clearAll">CLEAR ALL</button>
+  </div>
+</div>
+
+<div class="stage">
+
+<section class="card">
+  <div class="cardHeader"><span class="step">1</span> BUILD YOUR ACEO CONCEPT</div>
+  <div class="cardBody">
+    <div class="optionGrid">
+
+      <div class="group">
+        <div class="groupTitle">THEME / SUBJECT</div>
+        <div class="options" data-group="theme">
+          <label class="opt"><input type="checkbox" value="Abstract / Surreal">Abstract / Surreal</label>
+          <label class="opt"><input type="checkbox" value="Animals / Pets">Animals / Pets</label>
+          <label class="opt"><input type="checkbox" value="Aviation">Aviation</label>
+          <label class="opt"><input type="checkbox" value="Dark Folklore">Dark Folklore</label>
+          <label class="opt"><input type="checkbox" value="Fantasy / Mythical">Fantasy / Mythical</label>
+          <label class="opt"><input type="checkbox" value="Food / Kitchen">Food / Kitchen</label>
+          <label class="opt"><input type="checkbox" value="Holidays / Seasons">Holidays / Seasons</label>
+          <label class="opt"><input type="checkbox" value="Motorcycle Culture">Motorcycle Culture</label>
+          <label class="opt"><input type="checkbox" value="Music / Instruments">Music / Instruments</label>
+          <label class="opt"><input type="checkbox" value="Nature / Wildlife">Nature / Wildlife</label>
+          <label class="opt"><input type="checkbox" value="Nautical / Ocean">Nautical / Ocean</label>
+          <label class="opt"><input type="checkbox" value="People / Portraits">People / Portraits</label>
+          <label class="opt"><input type="checkbox" value="Road Trip / Travel">Road Trip / Travel</label>
+          <label class="opt"><input type="checkbox" value="Sci Fi / Futuristic">Sci Fi / Futuristic</label>
+          <label class="opt"><input type="checkbox" value="Small Town Americana">Small Town Americana</label>
+          <label class="opt"><input type="checkbox" value="Steampunk">Steampunk</label>
+          <label class="opt"><input type="checkbox" value="Still Life / Objects">Still Life / Objects</label>
+          <label class="opt"><input type="checkbox" value="Vintage / Retro">Vintage / Retro</label>
+          <label class="opt"><input type="checkbox" value="Western / Frontier">Western / Frontier</label>
+        </div>
+        <div class="customLine"><input type="text" data-custom="theme" placeholder="Other or custom theme"></div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">MAIN SUBJECT</div>
+        <div class="options" data-group="subject">
+          <label class="opt"><input type="checkbox" value="Airplanes">Airplanes</label>
+          <label class="opt"><input type="checkbox" value="Architecture">Architecture</label>
+          <label class="opt"><input type="checkbox" value="Birds">Birds</label>
+          <label class="opt"><input type="checkbox" value="Cats">Cats</label>
+          <label class="opt"><input type="checkbox" value="Dachshund">Dachshund</label>
+          <label class="opt"><input type="checkbox" value="Dogs">Dogs</label>
+          <label class="opt"><input type="checkbox" value="Fish / Sea Life">Fish / Sea Life</label>
+          <label class="opt"><input type="checkbox" value="Flowers / Plants">Flowers / Plants</label>
+          <label class="opt"><input type="checkbox" value="Food / Drink">Food / Drink</label>
+          <label class="opt"><input type="checkbox" value="Horses">Horses</label>
+          <label class="opt"><input type="checkbox" value="Insects / Bugs">Insects / Bugs</label>
+          <label class="opt"><input type="checkbox" value="Motorcycles">Motorcycles</label>
+          <label class="opt"><input type="checkbox" value="Mythical Creatures">Mythical Creatures</label>
+          <label class="opt"><input type="checkbox" value="Objects / Collectibles">Objects / Collectibles</label>
+          <label class="opt"><input type="checkbox" value="People">People</label>
+          <label class="opt"><input type="checkbox" value="Reptiles / Amphibians">Reptiles / Amphibians</label>
+          <label class="opt"><input type="checkbox" value="Robots / Machines">Robots / Machines</label>
+          <label class="opt"><input type="checkbox" value="Skulls / Skeletons">Skulls / Skeletons</label>
+          <label class="opt"><input type="checkbox" value="Vintage Vehicles">Vintage Vehicles</label>
+          <label class="opt"><input type="checkbox" value="Wild Animals">Wild Animals</label>
+        </div>
+        <div class="customLine"><input type="text" data-custom="subject" placeholder="Other or custom subject"></div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">VISUAL STYLE</div>
+        <div class="options" data-group="style">
+          <label class="opt"><input type="checkbox" value="Abstract">Abstract</label>
+          <label class="opt"><input type="checkbox" value="Acrylic Painting">Acrylic Painting</label>
+          <label class="opt"><input type="checkbox" value="Charcoal">Charcoal</label>
+          <label class="opt"><input type="checkbox" value="Collage">Collage</label>
+          <label class="opt"><input type="checkbox" value="Colored Pencil">Colored Pencil</label>
+          <label class="opt"><input type="checkbox" value="Digital Painting">Digital Painting</label>
+          <label class="opt"><input type="checkbox" value="Folk Art">Folk Art</label>
+          <label class="opt"><input type="checkbox" value="Impressionistic">Impressionistic</label>
+          <label class="opt"><input type="checkbox" value="Ink Illustration">Ink Illustration</label>
+          <label class="opt"><input type="checkbox" value="Minimalist Graphic">Minimalist Graphic</label>
+          <label class="opt"><input type="checkbox" value="Mixed Media">Mixed Media</label>
+          <label class="opt"><input type="checkbox" value="Oil Painting">Oil Painting</label>
+          <label class="opt"><input type="checkbox" value="Pencil / Graphite">Pencil / Graphite</label>
+          <label class="opt"><input type="checkbox" value="Photorealistic">Photorealistic</label>
+          <label class="opt"><input type="checkbox" value="Realistic">Realistic</label>
+          <label class="opt"><input type="checkbox" value="Travel Poster">Travel Poster</label>
+          <label class="opt"><input type="checkbox" value="Vintage Magazine Illustration">Vintage Magazine Illustration</label>
+          <label class="opt"><input type="checkbox" value="Watercolor">Watercolor</label>
+          <label class="opt"><input type="checkbox" value="Woodcut / Linocut">Woodcut / Linocut</label>
+        </div>
+        <div class="customLine"><input type="text" data-custom="style" placeholder="Other or custom style"></div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">ART STYLE / ERA</div>
+        <div class="options" data-group="artstyle">
+          <label class="opt"><input type="checkbox" value="1950s Americana">1950s Americana</label>
+          <label class="opt"><input type="checkbox" value="1960s Psychedelic">1960s Psychedelic</label>
+          <label class="opt"><input type="checkbox" value="1970s Retro">1970s Retro</label>
+          <label class="opt"><input type="checkbox" value="1980s Retro">1980s Retro</label>
+          <label class="opt"><input type="checkbox" value="Abstract">Abstract</label>
+          <label class="opt"><input type="checkbox" value="Americana">Americana</label>
+          <label class="opt"><input type="checkbox" value="Art Deco">Art Deco</label>
+          <label class="opt"><input type="checkbox" value="Art Nouveau">Art Nouveau</label>
+          <label class="opt"><input type="checkbox" value="Arts and Crafts">Arts and Crafts</label>
+          <label class="opt"><input type="checkbox" value="Atomic Age">Atomic Age</label>
+          <label class="opt"><input type="checkbox" value="Avant-garde">Avant-garde</label>
+          <label class="opt"><input type="checkbox" value="Bauhaus">Bauhaus</label>
+          <label class="opt"><input type="checkbox" value="Black Folk Art">Black Folk Art</label>
+          <label class="opt"><input type="checkbox" value="Cartoon">Cartoon</label>
+          <label class="opt"><input type="checkbox" value="Chinese">Chinese</label>
+          <label class="opt"><input type="checkbox" value="Contemporary Art">Contemporary Art</label>
+          <label class="opt"><input type="checkbox" value="Contemporary Illustration">Contemporary Illustration</label>
+          <label class="opt"><input type="checkbox" value="Dot Painting">Dot Painting</label>
+          <label class="opt"><input type="checkbox" value="Edwardian">Edwardian</label>
+          <label class="opt"><input type="checkbox" value="Experimental">Experimental</label>
+          <label class="opt"><input type="checkbox" value="Expressionism">Expressionism</label>
+          <label class="opt"><input type="checkbox" value="Fantasy">Fantasy</label>
+          <label class="opt"><input type="checkbox" value="Figurative Art">Figurative Art</label>
+          <label class="opt"><input type="checkbox" value="Folk Art">Folk Art</label>
+          <label class="opt"><input type="checkbox" value="Gothic Revival">Gothic Revival</label>
+          <label class="opt"><input type="checkbox" value="Illustration Art">Illustration Art</label>
+          <label class="opt"><input type="checkbox" value="Impressionism">Impressionism</label>
+          <label class="opt"><input type="checkbox" value="Industrial Vintage">Industrial Vintage</label>
+          <label class="opt"><input type="checkbox" value="Mid-Century Modern">Mid-Century Modern</label>
+          <label class="opt"><input type="checkbox" value="Miniature">Miniature</label>
+          <label class="opt"><input type="checkbox" value="Minimalism">Minimalism</label>
+          <label class="opt"><input type="checkbox" value="Minimalist Modern">Minimalist Modern</label>
+          <label class="opt"><input type="checkbox" value="Modernism">Modernism</label>
+          <label class="opt"><input type="checkbox" value="Naïve Art">Naïve Art</label>
+          <label class="opt"><input type="checkbox" value="Outsider Art">Outsider Art</label>
+          <label class="opt"><input type="checkbox" value="Pop Art">Pop Art</label>
+          <label class="opt"><input type="checkbox" value="Portraiture">Portraiture</label>
+          <label class="opt"><input type="checkbox" value="Post-Impressionism">Post-Impressionism</label>
+          <label class="opt"><input type="checkbox" value="Postmodernism">Postmodernism</label>
+          <label class="opt"><input type="checkbox" value="Primitive Folk">Primitive Folk</label>
+          <label class="opt"><input type="checkbox" value="Primitivism">Primitivism</label>
+          <label class="opt"><input type="checkbox" value="Realism">Realism</label>
+          <label class="opt"><input type="checkbox" value="Retro Futurism">Retro Futurism</label>
+          <label class="opt"><input type="checkbox" value="Still Life">Still Life</label>
+          <label class="opt"><input type="checkbox" value="Surrealism">Surrealism</label>
+          <label class="opt"><input type="checkbox" value="Urban Art">Urban Art</label>
+          <label class="opt"><input type="checkbox" value="Victorian">Victorian</label>
+          <label class="opt"><input type="checkbox" value="Western Americana">Western Americana</label>
+        </div>
+        <div class="customLine"><input type="text" data-custom="artstyle" placeholder="Other art style or era"></div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">MOOD / FEELING</div>
+        <div class="options" data-group="mood">
+          <label class="opt"><input type="checkbox" value="Adventurous">Adventurous</label>
+          <label class="opt"><input type="checkbox" value="Bold / Energetic">Bold / Energetic</label>
+          <label class="opt"><input type="checkbox" value="Cinematic">Cinematic</label>
+          <label class="opt"><input type="checkbox" value="Cozy">Cozy</label>
+          <label class="opt"><input type="checkbox" value="Dark / Gothic">Dark / Gothic</label>
+          <label class="opt"><input type="checkbox" value="Deadpan Humor">Deadpan Humor</label>
+          <label class="opt"><input type="checkbox" value="Dramatic / Intense">Dramatic / Intense</label>
+          <label class="opt"><input type="checkbox" value="Dreamlike">Dreamlike</label>
+          <label class="opt"><input type="checkbox" value="Eerie">Eerie</label>
+          <label class="opt"><input type="checkbox" value="Melancholic">Melancholic</label>
+          <label class="opt"><input type="checkbox" value="Mysterious">Mysterious</label>
+          <label class="opt"><input type="checkbox" value="Nostalgic">Nostalgic</label>
+          <label class="opt"><input type="checkbox" value="Peaceful / Calm">Peaceful / Calm</label>
+          <label class="opt"><input type="checkbox" value="Playful">Playful</label>
+          <label class="opt"><input type="checkbox" value="Romantic">Romantic</label>
+          <label class="opt"><input type="checkbox" value="Serene">Serene</label>
+          <label class="opt"><input type="checkbox" value="Whimsical">Whimsical</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">COLOR PALETTE</div>
+        <div class="options" data-group="palette">
+          <label class="opt"><input type="checkbox" value="Analogous Colors">Analogous Colors</label>
+          <label class="opt"><input type="checkbox" value="Autumn Palette">Autumn Palette</label>
+          <label class="opt"><input type="checkbox" value="Bold / High Contrast">Bold / High Contrast</label>
+          <label class="opt"><input type="checkbox" value="Complementary Colors">Complementary Colors</label>
+          <label class="opt"><input type="checkbox" value="Cool Blues / Greens / Purples">Cool Blues / Greens / Purples</label>
+          <label class="opt"><input type="checkbox" value="Deep Blue / Turquoise / Sea Green">Deep Blue / Turquoise / Sea Green</label>
+          <label class="opt"><input type="checkbox" value="Earth Tones">Earth Tones</label>
+          <label class="opt"><input type="checkbox" value="Limited Palette">Limited Palette</label>
+          <label class="opt"><input type="checkbox" value="Monochrome">Monochrome</label>
+          <label class="opt"><input type="checkbox" value="Muted / Soft / Pastel">Muted / Soft / Pastel</label>
+          <label class="opt"><input type="checkbox" value="Natural Color">Natural Color</label>
+          <label class="opt"><input type="checkbox" value="Neon / Vibrant">Neon / Vibrant</label>
+          <label class="opt"><input type="checkbox" value="Ocean Blues / Greens">Ocean Blues / Greens</label>
+          <label class="opt"><input type="checkbox" value="Sepia / Antique">Sepia / Antique</label>
+          <label class="opt"><input type="checkbox" value="Sunset Palette">Sunset Palette</label>
+          <label class="opt"><input type="checkbox" value="Vintage Americana">Vintage Americana</label>
+          <label class="opt"><input type="checkbox" value="Warm Reds / Oranges / Yellows">Warm Reds / Oranges / Yellows</label>
+        </div>
+        <div class="customLine"><input type="text" data-custom="palette" placeholder="Other or custom palette"></div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">COMPOSITION</div>
+        <div class="options" data-group="composition">
+          <label class="opt"><input type="checkbox" value="Close Up / Portrait">Close Up / Portrait</label>
+          <label class="opt"><input type="checkbox" value="Diagonal / Dynamic">Diagonal / Dynamic</label>
+          <label class="opt"><input type="checkbox" value="Environmental Scene">Environmental Scene</label>
+          <label class="opt"><input type="checkbox" value="Extreme Close Up">Extreme Close Up</label>
+          <label class="opt"><input type="checkbox" value="Full Body / Centered">Full Body / Centered</label>
+          <label class="opt"><input type="checkbox" value="High Angle / Looking Down">High Angle / Looking Down</label>
+          <label class="opt"><input type="checkbox" value="Layered Foreground / Background">Layered Foreground / Background</label>
+          <label class="opt"><input type="checkbox" value="Low Angle / Upward View">Low Angle / Upward View</label>
+          <label class="opt"><input type="checkbox" value="Minimalist / Simple">Minimalist / Simple</label>
+          <label class="opt"><input type="checkbox" value="Off Center">Off Center</label>
+          <label class="opt"><input type="checkbox" value="Overhead Composition">Overhead Composition</label>
+          <label class="opt"><input type="checkbox" value="Pattern / Repeating">Pattern / Repeating</label>
+          <label class="opt"><input type="checkbox" value="Rule of Thirds">Rule of Thirds</label>
+          <label class="opt"><input type="checkbox" value="Simple Portrait">Simple Portrait</label>
+          <label class="opt"><input type="checkbox" value="Symmetrical / Centered">Symmetrical / Centered</label>
+          <label class="opt"><input type="checkbox" value="Wide Establishing View">Wide Establishing View</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">LIGHTING</div>
+        <div class="options" data-group="lighting">
+          <label class="opt"><input type="checkbox" value="Backlit / Silhouette">Backlit / Silhouette</label>
+          <label class="opt"><input type="checkbox" value="Candlelight / Warm Glow">Candlelight / Warm Glow</label>
+          <label class="opt"><input type="checkbox" value="Dramatic / High Contrast">Dramatic / High Contrast</label>
+          <label class="opt"><input type="checkbox" value="Even / Flat Light">Even / Flat Light</label>
+          <label class="opt"><input type="checkbox" value="Golden Hour / Warm Light">Golden Hour / Warm Light</label>
+          <label class="opt"><input type="checkbox" value="Mood Lighting / Low Light">Mood Lighting / Low Light</label>
+          <label class="opt"><input type="checkbox" value="Moonlight">Moonlight</label>
+          <label class="opt"><input type="checkbox" value="Natural Daylight">Natural Daylight</label>
+          <label class="opt"><input type="checkbox" value="Neon / Artificial">Neon / Artificial</label>
+          <label class="opt"><input type="checkbox" value="Overcast Light">Overcast Light</label>
+          <label class="opt"><input type="checkbox" value="Soft / Diffused Light">Soft / Diffused Light</label>
+          <label class="opt"><input type="checkbox" value="Spotlight / Focused">Spotlight / Focused</label>
+          <label class="opt"><input type="checkbox" value="Studio Lighting">Studio Lighting</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">SURFACE / FINISH</div>
+        <div class="options" data-group="finish">
+          <label class="opt"><input type="checkbox" value="Aged / Vintage">Aged / Vintage</label>
+          <label class="opt"><input type="checkbox" value="Canvas Texture">Canvas Texture</label>
+          <label class="opt"><input type="checkbox" value="Clean Refined Finish">Clean Refined Finish</label>
+          <label class="opt"><input type="checkbox" value="Cracked / Weathered">Cracked / Weathered</label>
+          <label class="opt"><input type="checkbox" value="Distressed / Worn">Distressed / Worn</label>
+          <label class="opt"><input type="checkbox" value="Glossy">Glossy</label>
+          <label class="opt"><input type="checkbox" value="Grunge / Rough">Grunge / Rough</label>
+          <label class="opt"><input type="checkbox" value="Heavy Brushstrokes">Heavy Brushstrokes</label>
+          <label class="opt"><input type="checkbox" value="Impasto / Thick Paint">Impasto / Thick Paint</label>
+          <label class="opt"><input type="checkbox" value="Matte">Matte</label>
+          <label class="opt"><input type="checkbox" value="Metallic Accents">Metallic Accents</label>
+          <label class="opt"><input type="checkbox" value="Oil and Acrylic Painting Paper">Oil and Acrylic Painting Paper</label>
+          <label class="opt"><input type="checkbox" value="Paper Grain">Paper Grain</label>
+          <label class="opt"><input type="checkbox" value="Soft Dreamy Finish">Soft Dreamy Finish</label>
+          <label class="opt"><input type="checkbox" value="Textured Paper">Textured Paper</label>
+          <label class="opt"><input type="checkbox" value="Watercolor Paper">Watercolor Paper</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <div class="groupTitle">KEY DETAILS</div>
+        <div class="options" data-group="details">
+          <label class="opt"><input type="checkbox" value="Dramatic shadow">Dramatic shadow</label>
+          <label class="opt"><input type="checkbox" value="Handmade feeling">Handmade feeling</label>
+          <label class="opt"><input type="checkbox" value="High detail">High detail</label>
+          <label class="opt"><input type="checkbox" value="Humorous detail">Humorous detail</label>
+          <label class="opt"><input type="checkbox" value="Intricate background">Intricate background</label>
+          <label class="opt"><input type="checkbox" value="Magical elements">Magical elements</label>
+          <label class="opt"><input type="checkbox" value="Mechanical elements">Mechanical elements</label>
+          <label class="opt"><input type="checkbox" value="Miniature readability">Miniature readability</label>
+          <label class="opt"><input type="checkbox" value="Nature elements">Nature elements</label>
+          <label class="opt"><input type="checkbox" value="Rich textures">Rich textures</label>
+          <label class="opt"><input type="checkbox" value="Small hidden detail">Small hidden detail</label>
+          <label class="opt"><input type="checkbox" value="Storytelling elements">Storytelling elements</label>
+          <label class="opt"><input type="checkbox" value="Strong focal point">Strong focal point</label>
+          <label class="opt"><input type="checkbox" value="Strong silhouette">Strong silhouette</label>
+          <label class="opt"><input type="checkbox" value="Vintage elements">Vintage elements</label>
+          <label class="opt"><input type="checkbox" value="Weathered surfaces">Weathered surfaces</label>
+        </div>
+        <div class="customLine"><input type="text" data-custom="details" placeholder="Other details"></div>
+      </div>
+
+    </div>
+
+    <div class="group" style="margin-top:10px">
+      <div class="groupTitle">EXTRA DETAILS (OPTIONAL)</div>
+      <input id="extra" type="text" placeholder="Optional idea, location, prop, joke, club theme, painting direction">
+    </div>
+    <div class="group" style="margin-top:10px">
+      <div class="groupTitle">ANYTHING TO AVOID? (OPTIONAL)</div>
+      <input id="avoid" type="text" placeholder="Anything you do not want included">
+    </div>
+    <div class="group" style="margin-top:10px">
+      <div class="groupTitle">ANYTHING ELSE?</div>
+      <input id="other" type="text" placeholder="Any final creative direction">
+    </div>
+<div class="mainActions">
+      <button id="surpriseMe">SURPRISE ME</button>
+      <button class="soft" id="simplify">SIMPLIFIED: OFF</button>
+      <button class="dark" id="copyPrompt">COPY PROMPT</button>
+      <button class="primary" id="openChatGPTBottom">OPEN CHATGPT</button>
+    </div>
+
+    <div class="modeNote" id="modeNote">
+      Standard mode keeps the selected detail and complexity. Simplified ACEO keeps the concept but reduces background detail, tiny objects, difficult lighting, and fine texture so the piece is practical for a beginning to moderate painter.
+    </div>
+  </div>
+</section>
+
+<section class="card">
+  <div class="cardHeader"><span class="step">2</span> GENERATED PROMPT</div>
+  <div class="cardBody">
+    <textarea id="promptBox" placeholder="Your ACEO prompt will appear here."></textarea>
+    <div class="promptMeta">
+      <span id="modeLabel">Mode: Standard</span>
+      <span id="countLabel">0 characters</span>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<div class="footer">DOXEN ART COMPANY • LOCAL TEST VERSION</div>
+</div>
+
+<script>
+const groups = ["theme","subject","style","artstyle","mood","palette","composition","lighting","finish","details"];
+let simplified = false;
+
+function valuesFor(name){
+  const checked = [...document.querySelectorAll(`[data-group="${name}"] input[type="checkbox"]:checked`)]
+    .map(el => el.value);
+  const custom = document.querySelector(`[data-custom="${name}"]`);
+  if(custom && custom.value.trim()) checked.push(custom.value.trim());
+  return checked;
+}
+
+function line(label, values){
+  if(!values.length) return "";
+  return `${label}: ${values.join(", ")}.`;
+}
+
+function buildPrompt(useSimple = simplified){
+  simplified = useSimple;
+
+  const theme = valuesFor("theme");
+  const subject = valuesFor("subject");
+  const style = valuesFor("style");
+  const artstyle = valuesFor("artstyle");
+  const mood = valuesFor("mood");
+  const palette = valuesFor("palette");
+  const composition = valuesFor("composition");
+  const lighting = valuesFor("lighting");
+  const finish = valuesFor("finish");
+  const details = valuesFor("details");
+  const extra = document.getElementById("extra").value.trim();
+  const avoid = document.getElementById("avoid").value.trim();
+  const other = document.getElementById("other").value.trim();
+
+  let parts = [
+    "Create a finished original ACEO collectible artwork.",
+    "Use a vertical 5:7 composition designed specifically for a finished 2.5 by 3.5 inch ACEO art card."
+  ];
+
+  [
+    line("Theme elements", theme),
+    line("Main subject elements", subject),
+    line("Visual style blend", style),
+    line("Art style and era influences", artstyle),
+    line("Mood and feeling", mood),
+    line("Color palette influences", palette),
+    line("Composition elements", composition),
+    line("Lighting influences", lighting),
+    line("Surface and finish", finish),
+    line("Key details to include", details)
+  ].filter(Boolean).forEach(x => parts.push(x));
+
+  if(useSimple){
+    parts.push(
+      "Simplified painting direction: Preserve the main concept and personality, but reduce the artwork to a manageable beginning to moderate ACEO painting.",
+      "Use one clear focal subject and a simple readable silhouette.",
+      "Keep the background broad, quiet, and lightly suggested rather than intricate.",
+      "Use fewer small objects, fewer overlapping forms, fewer tiny textures, and fewer secondary focal points.",
+      "Simplify anatomy, machinery, architecture, foliage, reflections, and surface detail into larger paintable shapes.",
+      "Use a limited number of clearly separated values and colors.",
+      "Keep lighting believable and easy to paint. Avoid complicated reflected light, multiple light sources, extreme transparency, and excessive glow effects.",
+      "Use visible brush friendly shapes and edges. Favor medium and large shapes over miniature detail.",
+      "The finished image should still look polished and collectible, but it should be realistically paintable by a beginning to moderate artist working at 2.5 by 3.5 inches."
+    );
+  } else {
+    parts.push(
+      "Make the image visually strong at miniature ACEO size. Use a clear focal point, strong silhouette, purposeful lighting, rich detail, and an intentional composition.",
+      "The artwork should feel like a distinctive one of a kind collectible piece rather than generic stock art."
+    );
+  }
+
+  parts.push(
+    "Fill the entire card with artwork. Do not show a frame, mat, mockup, border, tabletop, hand holding the card, gallery wall, watermark, signature, written caption, lettering, or typography."
+  );
+
+  if(extra) parts.push(`Additional creative direction: ${extra}.`);
+  if(avoid) parts.push(`Avoid: ${avoid}.`);
+  if(other) parts.push(`Anything else: ${other}.`);
+  parts.push("Generate only the finished artwork itself.");
+  parts.push("Please generate the image now.");
+
+  const result = parts.join("\n\n");
+  document.getElementById("promptBox").value = result;
+  document.getElementById("modeLabel").textContent = useSimple ? "Mode: Simplified ACEO" : "Mode: Standard";
+  document.getElementById("countLabel").textContent = `${result.length} characters`;
+  return result;
+}
+
+
+function surpriseMe(){
+  clearAll();
+  groups.forEach(name => {
+    const boxes = [...document.querySelectorAll(`[data-group="${name}"] input[type="checkbox"]`)];
+    if(boxes.length){
+      const pick = boxes[Math.floor(Math.random() * boxes.length)];
+      pick.checked = true;
+      if(Math.random() < 0.28 && boxes.length > 4){
+        let second = boxes[Math.floor(Math.random() * boxes.length)];
+        if(second !== pick) second.checked = true;
+      }
+    }
+  });
+  buildPrompt(false);
+}
+
+function clearAll(){
+  document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+  document.querySelectorAll('input[type="text"]').forEach(el => el.value = "");
+  document.getElementById("promptBox").value = "";
+  simplified = false;
+  document.getElementById("modeLabel").textContent = "Mode: Standard";
+  document.getElementById("countLabel").textContent = "0 characters";
+  const simplifyBtn = document.getElementById("simplify");
+  simplifyBtn.textContent = "SIMPLIFIED: OFF";
+  simplifyBtn.classList.remove("primary");
+  simplifyBtn.classList.add("soft");
+}
+
+async function copyPrompt(){
+  const text = document.getElementById("promptBox").value || buildPrompt();
+  try{
+    await navigator.clipboard.writeText(text);
+  }catch(err){
+    const box = document.getElementById("promptBox");
+    box.focus();
+    box.select();
+    document.execCommand("copy");
+  }
+}
+
+const clearAllButton = document.getElementById("clearAll");
+if(clearAllButton) clearAllButton.addEventListener("click", clearAll);
+const simplifyButton = document.getElementById("simplify");
+if(simplifyButton) simplifyButton.addEventListener("click", () => {
+  simplified = !simplified;
+  const btn = document.getElementById("simplify");
+  btn.textContent = simplified ? "SIMPLIFIED: ON" : "SIMPLIFIED: OFF";
+  btn.classList.toggle("primary", simplified);
+  btn.classList.toggle("soft", !simplified);
+  buildPrompt(simplified);
+});
+const copyPromptButton = document.getElementById("copyPrompt");
+if(copyPromptButton) copyPromptButton.addEventListener("click", copyPrompt);
+const surpriseButton = document.getElementById("surpriseMe");
+if(surpriseButton) surpriseButton.addEventListener("click", surpriseMe);
+
+document.querySelectorAll('input[type="checkbox"], input[type="text"]').forEach(el => {
+  const updatePrompt = () => buildPrompt(simplified);
+  el.addEventListener("change", updatePrompt);
+  el.addEventListener("input", updatePrompt);
+});
+
+
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+let activeRecognition = null;
+let activeMicButton = null;
+let activeTarget = null;
+
+function setMicStatus(message){
+  const status = document.getElementById("micStatus");
+  if(status) status.textContent = message;
+}
+
+function stopActiveMic(){
+  if(activeRecognition){
+    try{ activeRecognition.stop(); }catch(e){}
+  }
+}
+
+function startDictation(target, button){
+  if(!SpeechRecognitionAPI){
+    setMicStatus("Speech recognition is not supported in this browser. Use the phone keyboard microphone instead.");
+    target.focus();
+    return;
+  }
+
+  if(activeRecognition){
+    if(activeTarget === target){
+      stopActiveMic();
+      return;
+    }
+    stopActiveMic();
+  }
+
+  const recognition = new SpeechRecognitionAPI();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.lang = "en-US";
+
+  activeRecognition = recognition;
+  activeTarget = target;
+  activeMicButton = button;
+
+  recognition.onstart = () => {
+    document.querySelectorAll(".micInline").forEach(b => {
+      b.classList.remove("listening");
+      b.innerHTML = "&#127908;";
+    });
+    button.classList.add("listening");
+    button.innerHTML = "&#9632;";
+    setMicStatus("Listening. Speak once, then pause.");
+  };
+
+  recognition.onresult = event => {
+    const result = event.results[event.resultIndex || 0];
+    if(!result || !result[0]) return;
+
+    const transcript = result[0].transcript.trim();
+    if(!transcript) return;
+
+    const existing = target.value.trim();
+    const normalizedExisting = existing.toLowerCase();
+    const normalizedNew = transcript.toLowerCase();
+
+    if(!normalizedExisting.endsWith(normalizedNew)){
+      target.value = existing ? existing + " " + transcript : transcript;
+      target.dispatchEvent(new Event("input", {bubbles:true}));
+      target.dispatchEvent(new Event("change", {bubbles:true}));
+    }
+
+    if(document.getElementById("promptBox").value.trim()){
+      buildPrompt(simplified);
+    }
+  };
+
+  recognition.onerror = event => {
+    const map = {
+      "not-allowed":"Microphone permission was blocked.",
+      "service-not-allowed":"Speech recognition service is blocked.",
+      "no-speech":"No speech was detected.",
+      "audio-capture":"No microphone was detected.",
+      "network":"Speech recognition network error."
+    };
+    setMicStatus(map[event.error] || ("Microphone error: " + event.error));
+  };
+
+  recognition.onend = () => {
+    if(button){
+      button.classList.remove("listening");
+      button.innerHTML = "&#127908;";
+    }
+    activeRecognition = null;
+    activeMicButton = null;
+    activeTarget = null;
+
+    const status = document.getElementById("micStatus");
+    if(status && status.textContent.startsWith("Listening")){
+      setMicStatus("Ready. Press any microphone once and speak.");
+    }
+  };
+
+  try{
+    recognition.start();
+  }catch(e){
+    setMicStatus("The microphone could not start. Press Fix Microphone.");
+  }
+}
+
+function installInlineMicrophones(){
+  const inputs = [...document.querySelectorAll('input[type="text"]')];
+
+  inputs.forEach((input, index) => {
+    if(input.dataset.micInstalled === "true") return;
+    input.dataset.micInstalled = "true";
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "micField";
+
+    input.parentNode.insertBefore(wrapper, input);
+    wrapper.appendChild(input);
+
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "micInline";
+    button.innerHTML = "&#127908;";
+    button.setAttribute("aria-label", "Dictate into this field");
+    button.title = "Press once to speak. Press again to stop.";
+    button.addEventListener("click", () => startDictation(input, button));
+
+    wrapper.appendChild(button);
+  });
+}
+
+async function fixMicrophone(){
+  setMicStatus("Checking microphone permission...");
+  try{
+    if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
+      setMicStatus("This browser does not expose microphone permission controls.");
+      return;
+    }
+
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+    stream.getTracks().forEach(track => track.stop());
+
+    if(SpeechRecognitionAPI){
+      setMicStatus("Microphone permission is working. Speech recognition is available.");
+    }else{
+      setMicStatus("Microphone permission works, but browser speech recognition is unavailable. Use the phone keyboard microphone.");
+    }
+  }catch(err){
+    if(err && (err.name === "NotAllowedError" || err.name === "PermissionDeniedError")){
+      setMicStatus("Microphone permission is blocked. In Chrome, open Site settings for this page and allow Microphone.");
+    }else{
+      setMicStatus("Microphone test failed: " + (err.name || "unknown error"));
+    }
+  }
+}
+
+function usePhoneKeyboardMic(){
+  const target = document.querySelector('input[type="text"]');
+  if(target){
+    target.focus();
+    setMicStatus("Field selected. Use the microphone button on your phone keyboard.");
+  }
+}
+
+installInlineMicrophones();
+
+const fixMicButton = document.getElementById("fixMicrophone");
+if(fixMicButton) fixMicButton.addEventListener("click", fixMicrophone);
+
+const phoneMicButton = document.getElementById("phoneKeyboardMic");
+if(phoneMicButton) phoneMicButton.addEventListener("click", usePhoneKeyboardMic);
+
+
+const openChatGPTBottom = document.getElementById("openChatGPTBottom");
+if(openChatGPTBottom) openChatGPTBottom.addEventListener("click", () => {
+  window.open("https://chatgpt.com/", "_blank");
+});
+
+</script>
+</body>
+</html>
